@@ -1,0 +1,19 @@
+{
+  "name": "bascraper",
+  "version": "1.0.0",
+  "description": "A web scraper for pulling videos from teachable courses.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Troy Hatchard",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "puppeteer": "^2.0.0"
+  },
+  "devDependencies": {}
+}
