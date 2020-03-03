@@ -18,12 +18,12 @@ const { BAEMAIL, BAPASS } = process.env;
       console.error("Error connecting to url: ", err);
       process.exit();
     });
-  await page.screenshot({path: 'screenshots/img1.png'})
-    .then( () => console.log("Screenshot 1 captured"))
-    .catch((err) => {
-      console.error("Error capturing screenshot: ", err);
-      process.exit();
-    });
+  // await page.screenshot({path: 'screenshots/img1.png'})
+  //   .then( () => console.log("Screenshot 1 captured"))
+  //   .catch((err) => {
+  //     console.error("Error capturing screenshot: ", err);
+  //     process.exit();
+  //   });
   //const button = await page.$(() => document.querySelector('ul.nav > li'));
   //await button.evaluate( button => button.click());
   //await page.click();
@@ -34,8 +34,8 @@ const { BAEMAIL, BAPASS } = process.env;
     .then(console.log("waiting"))
     .catch((err) => console.error("Error query Selector: ", err));
   await page.waitFor(3000, {timeout: 60000});
-  await page.screenshot({path: 'screenshots/img2.png'})
-    .then(() => console.log("screenshot 2 captured"));
+  // await page.screenshot({path: 'screenshots/img2.png'})
+  //   .then(() => console.log("screenshot 2 captured"));
   //second page
   selector = "#user_email";
   await page.waitFor((selector) => !!document.querySelector(selector), {timeout:120000}, selector)
@@ -46,14 +46,14 @@ const { BAEMAIL, BAPASS } = process.env;
   selector = "#user_password";
   await page.evaluate((selector, BAPASS) => document.querySelector(selector).value = BAPASS, selector, BAPASS)
     .catch((err) => console.error("Error query Selector: ", err));
-  await page.screenshot({path: 'screenshots/img3.png'})
-    .then(console.log("Screenshot 3 captured"));
+  // await page.screenshot({path: 'screenshots/img3.png'})
+  //   .then(console.log("Screenshot 3 captured"));
   selector = ".btn"
   await page.evaluate((selector) => document.querySelector(selector).click(), selector)
     .catch((err) => console.error("Error query Selector: ", err));
   await page.waitFor(5000);
-  await page.screenshot({path: 'screenshots/img4.png'})
-    .then(console.log("Screenshot 4 captured"));
+  // await page.screenshot({path: 'screenshots/img4.png'})
+  //   .then(console.log("Screenshot 4 captured"));
 
   //page 3
   selector = ".course-box-image-container";
@@ -76,22 +76,42 @@ const { BAEMAIL, BAPASS } = process.env;
       process.exit();
     });
 
+let videoLinks = [];
+
   for (const [i, link] of lectureLinks.entries()) {
-    await page.goto(link)
-      .then(console.log(`Waiting for videos on week ${i+1}...`))
+
+    await page.goto(link, {waitUntil:"networkidle0"})
+      .then(console.log(`Waiting for videos on week ${i}...`))
       .catch((err) => {
         console.error("Error with lecture links: ", err);
         process.exit(0);
       })
-    await page.waitFor(() => !!document.querySelector("img.w-css-reset"))
-      .then(page.screenshot({path: `screenshots/week${i+1}.png`}))
-      .catch((err) => {
-        console.error("Error waiting for: ", err);
-        process.exit(0);
-      });
 
+    await page.evaluate(() => {
+      const pdfElements = document.querySelectorAll('.lecture-attachment-type-pdf_embed');
+      for (const pdfElement of pdfElements) {
+        pdfElement.remove();
+      }
+    });
+
+    await page.waitFor(10000);
+    await page.screenshot({path: `screenshots/week${i}.png`, fullPage: true});
+    await page.evaluate(() => {
+      const videoElements = document.querySelectorAll('video');
+      for (const videoElement of videoElements) {
+        const videoUrl = videoElement.src;
+        console.log(videoUrl);
+        videoLinks.push(videoUrl);
+      }
+    })
+
+    // const videoElements = await page.$$('video');
+    // for (const videoElement of videoElements) {
+    //   const videoUrl = await videoElement.getProperty('src');
+    //   console.log(videoUrl);
+    //   videoLinks.push(videoUrl);
+    // }
   }
-
 
 
 
