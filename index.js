@@ -7,10 +7,12 @@ const lectureUrl = 'https://www.thesuperathleteacademy.com/courses/564696/lectur
 
 const { BAEMAIL, BAPASS } = process.env;
 
+const chromeOptions = {headless:false, defaultViewPort: null};
+
 (async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch(chromeOptions);
   const page = await browser.newPage();
-  await page.setViewport({width:1920, height:1080});
+  await page.setViewport({width:1500, height:1000});
   console.log("Connecting to URL...")
   await page.goto(url, {timeout:60000, waitUntil: 'domcontentloaded'})
     .then( () => console.log("Connected to ", url))
@@ -31,9 +33,9 @@ const { BAEMAIL, BAPASS } = process.env;
   let selector = 'li a';
   await page.waitFor(selector);
   await page.evaluate((selector) => document.querySelector(selector).click(), selector)
-    .then(console.log("waiting"))
     .catch((err) => console.error("Error query Selector: ", err));
-  await page.waitFor(3000, {timeout: 60000});
+  console.log("Clicked Login");
+  await page.waitFor(5000);
   // await page.screenshot({path: 'screenshots/img2.png'})
   //   .then(() => console.log("screenshot 2 captured"));
   //second page
@@ -50,7 +52,7 @@ const { BAEMAIL, BAPASS } = process.env;
   //   .then(console.log("Screenshot 3 captured"));
   selector = ".btn"
   await page.evaluate((selector) => document.querySelector(selector).click(), selector)
-    .catch((err) => console.error("Error query Selector: ", err));
+    .catch((err) => console.error("Error query Selector: line 53", err));
   await page.waitFor(5000);
   // await page.screenshot({path: 'screenshots/img4.png'})
   //   .then(console.log("Screenshot 4 captured"));
@@ -94,16 +96,19 @@ let videoLinks = [];
       }
     });
 
-    await page.waitFor(10000);
-    await page.screenshot({path: `screenshots/week${i}.png`, fullPage: true});
-    await page.evaluate(() => {
-      const videoElements = document.querySelectorAll('video');
-      for (const videoElement of videoElements) {
-        const videoUrl = videoElement.src;
-        console.log(videoUrl);
-        videoLinks.push(videoUrl);
-      }
-    })
+    // await page.waitFor(10000);
+    // let screenshotName = `screenshots/week${i}.jpeg`
+    // await page.screenshot({path: screenshotName, fullPage:true, quality:10})
+    //   .catch((err) => {
+    //     console.error("Screenshot Error", err);
+    //   });
+    const videoElements = await page.evaluate(() => document.querySelectorAll('img.w-css-reset'));
+
+    videoElements.forEach((videoElement) => {
+      let videoUrl = videoElement.src;
+      console.log(videoUrl);
+      videoLinks.push(videoUrl);
+    });
 
     // const videoElements = await page.$$('video');
     // for (const videoElement of videoElements) {
