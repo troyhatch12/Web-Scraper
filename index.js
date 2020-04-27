@@ -7,7 +7,12 @@ const lectureUrl = 'https://www.thesuperathleteacademy.com/courses/564696/lectur
 
 const { BAEMAIL, BAPASS } = process.env;
 
-const chromeOptions = {headless:false, defaultViewPort: null};
+
+const chromeOptions = {
+    executablePath:"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+    headless:false, 
+    defaultViewPort: null,
+    slowMo:10};
 
 (async () => {
   const browser = await puppeteer.launch(chromeOptions);
@@ -78,7 +83,6 @@ const chromeOptions = {headless:false, defaultViewPort: null};
       process.exit();
     });
 
-let videoLinks = [];
 
   for (const [i, link] of lectureLinks.entries()) {
 
@@ -88,7 +92,7 @@ let videoLinks = [];
         console.error("Error with lecture links: ", err);
         process.exit(0);
       })
-
+    
     await page.evaluate(() => {
       const pdfElements = document.querySelectorAll('.lecture-attachment-type-pdf_embed');
       for (const pdfElement of pdfElements) {
@@ -102,13 +106,21 @@ let videoLinks = [];
     //   .catch((err) => {
     //     console.error("Screenshot Error", err);
     //   });
-    const videoElements = await page.evaluate(() => document.querySelectorAll('img.w-css-reset'));
+    let selector = 'img.w-css-reset';
+    await page.waitFor(selector);
+    const videoLinks = await page.evaluate((selector) => {
+      let videos = document.querySelectorAll(selector);
+      let vidLinks = [];
+      videos.forEach((video) => {
+        let videoUrl = video.src;
+        vidLinks.push(videoUrl);
+      });
+      return vidLinks;
+    }, selector);
 
-    videoElements.forEach((videoElement) => {
-      let videoUrl = videoElement.src;
-      console.log(videoUrl);
-      videoLinks.push(videoUrl);
-    });
+ 
+    console.log(videoLinks);
+
 
     // const videoElements = await page.$$('video');
     // for (const videoElement of videoElements) {
