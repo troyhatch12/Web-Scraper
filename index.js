@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const axios = require('axios');
+const fs = require('fs');
 
 const url = 'https://www.thesuperathleteacademy.com/';
 
@@ -12,7 +12,7 @@ const chromeOptions = {
     executablePath:"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
     headless:false, 
     defaultViewPort: null,
-    slowMo:25};
+    slowMo:24};
 
 try {
 
@@ -139,25 +139,19 @@ try {
 
       videosUrls.push(videoLinks);
 
-     // break; //for testing. Only want to use one lecture
+      //break; //for testing. Only want to use one lecture
     }
+
+    videosObj = {"urls": videosUrls};
+
+    fs.writeFile ("videoUrls.json", JSON.stringify(videosObj), function(err) {
+      if (err) throw err;
+      console.log('complete');
+      });
 
     console.log(videosUrls);
 
-    for(const [i, urls] of videosUrls.entries()) {
-      for( const [j, vidUrl] of urls.entries()) {
-        await page.goto(vidUrl);
-        await page.evaluate(() => {
-          const anchor = document.createElement('a');
-          const sourceEl = document.querySelector('video source');
-          const source = sourceEl.getAttribute('src');
-          anchor.setAttribute('href', source);
-          anchor.setAttribute('download', `BALec${i}Vid${j}.mp4`);
-          document.body.appendChild(anchor);
-          anchor.click();
-        });
-      }
-    }
+    
 
     // videoUrls.forEach(async(urlList) => {
     //   urlList.forEach(async(url) => {
