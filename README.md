@@ -1,6 +1,6 @@
 Background
 =============
-I subscribed to a workout program that was hosted through a site called teachable. I injured during the course of this workout program so I couldn't continue doing it, but I wanted to try to go through it again. So I wanted to keep the course without continuously paying the monthly payment. There was no good way for me to do this besides to download the lectures one by one and this would have taken hours. So I wrote this web scraper instead.
+I subscribed to a workout program that was hosted through a site called teachable. I was injured during the course of this workout program so I couldn't continue doing it, but I wanted to try to go through it again. So I wanted to keep the course without continuously paying the monthly payment. There was no good way for me to do this besides to download the lectures one by one and this would have taken hours. So I wrote this web scraper instead.
 
 Captcha issues
 ==============
